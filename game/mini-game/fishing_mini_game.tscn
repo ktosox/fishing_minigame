@@ -3,31 +3,35 @@
 [ext_resource type="Script" uid="uid://cxsfrxmn6mc0f" path="res://mini-game/fishing_mini_game.gd" id="1_gx836"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gx836"]
-size = Vector2(50, 120)
+size = Vector2(50, 100)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gx836"]
-radius = 12.0
-height = 74.0
+radius = 13.0
+height = 64.0
 
-[node name="FishingMiniGame" type="Node2D"]
+[node name="FishingMiniGame" type="Node2D" node_paths=PackedStringArray("top_border", "bot_border", "fish", "catcher")]
 position = Vector2(554, 358)
 script = ExtResource("1_gx836")
+top_border = NodePath("MovementAxis/TopBorder")
+bot_border = NodePath("MovementAxis/BotBorder")
+fish = NodePath("MovementAxis/Fish")
+catcher = NodePath("MovementAxis/Catcher")
 
 [node name="BackDrop" type="Line2D" parent="."]
 points = PackedVector2Array(0, -240, 0, 240)
 width = 80.0
 default_color = Color(2.4065375e-07, 0.44959706, 0.5557379, 1)
 
-[node name="ProgressBack" type="Line2D" parent="."]
-position = Vector2(29, 0)
-points = PackedVector2Array(0, -236, 0, 236)
-default_color = Color(0, 0, 0, 1)
-
 [node name="Progress" type="Line2D" parent="."]
 modulate = Color(1, 1, 0, 1)
 position = Vector2(29, 0)
 points = PackedVector2Array(0, -234, 0, 234)
 width = 6.0
+
+[node name="ProgressBack" type="Line2D" parent="Progress"]
+show_behind_parent = true
+points = PackedVector2Array(0, -236, 0, 236)
+default_color = Color(0, 0, 0, 1)
 
 [node name="TestWinToggle" type="CheckButton" parent="."]
 offset_left = -399.0
@@ -38,28 +42,38 @@ button_pressed = true
 text = "Test Toggle"
 
 [node name="MovementAxis" type="Marker2D" parent="."]
+position = Vector2(-7, 0)
 
 [node name="Catcher" type="Area2D" parent="MovementAxis"]
-position = Vector2(-7, 8)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MovementAxis/Catcher"]
 shape = SubResource("RectangleShape2D_gx836")
 
 [node name="Line2D" type="Line2D" parent="MovementAxis/Catcher"]
-points = PackedVector2Array(0, 60, 0, -60)
+points = PackedVector2Array(0, 50, 0, -50)
 width = 50.0
 default_color = Color(0.5882353, 1, 0.22352941, 1)
 
 [node name="Fish" type="Area2D" parent="MovementAxis"]
-position = Vector2(-7, 6)
 
 [node name="Line2D" type="Line2D" parent="MovementAxis/Fish"]
-position = Vector2(3, 14.999999)
-scale = Vector2(0.76, 0.8348624)
+position = Vector2(3, 11.577972)
+scale = Vector2(0.76, 0.63302743)
 points = PackedVector2Array(-5, 0, -16, 27, 11, 27, -2, -3, 10, -13, 7, -44, -5, -62, -10.673767, -54.144012, -18, -44, -18.639511, -27.372864, -19, -18, -4, 4, -7, -36, -6, -47, 4, -28, 1, -12, -15, -37, -5, -51, 1, 23, -6, 22, -5, 1, -14, -27)
 default_color = Color(1, 0.8117647, 0, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MovementAxis/Fish"]
 shape = SubResource("CapsuleShape2D_gx836")
 
+[node name="TopBorder" type="Marker2D" parent="MovementAxis"]
+position = Vector2(0, -200)
+
+[node name="BotBorder" type="Marker2D" parent="MovementAxis"]
+position = Vector2(0, 200)
+
+[node name="FishTrashingTimer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
 [connection signal="toggled" from="TestWinToggle" to="." method="_on_test_win_toggle_toggled"]
+[connection signal="timeout" from="FishTrashingTimer" to="." method="_on_fish_trashing_timer_timeout"]
