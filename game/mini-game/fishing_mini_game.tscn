@@ -26,14 +26,16 @@ default_color = Color(2.4065375e-07, 0.44959706, 0.5557379, 1)
 modulate = Color(1, 1, 0, 1)
 position = Vector2(29, 0)
 points = PackedVector2Array(0, -234, 0, 234)
-width = 6.0
+width = 14.0
 
 [node name="ProgressBack" type="Line2D" parent="Progress"]
 show_behind_parent = true
 points = PackedVector2Array(0, -236, 0, 236)
+width = 18.0
 default_color = Color(0, 0, 0, 1)
 
 [node name="TestWinToggle" type="CheckButton" parent="."]
+visible = false
 offset_left = -399.0
 offset_top = -193.0
 offset_right = -264.0
@@ -42,9 +44,12 @@ button_pressed = true
 text = "Test Toggle"
 
 [node name="MovementAxis" type="Marker2D" parent="."]
-position = Vector2(-7, 0)
+position = Vector2(-10, -1)
 
 [node name="Catcher" type="Area2D" parent="MovementAxis"]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MovementAxis/Catcher"]
 shape = SubResource("RectangleShape2D_gx836")
@@ -55,6 +60,9 @@ width = 50.0
 default_color = Color(0.5882353, 1, 0.22352941, 1)
 
 [node name="Fish" type="Area2D" parent="MovementAxis"]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
 
 [node name="Line2D" type="Line2D" parent="MovementAxis/Fish"]
 position = Vector2(3, 11.577972)
@@ -72,8 +80,10 @@ position = Vector2(0, -200)
 position = Vector2(0, 200)
 
 [node name="FishTrashingTimer" type="Timer" parent="."]
-wait_time = 3.0
+wait_time = 2.0
 autostart = true
 
 [connection signal="toggled" from="TestWinToggle" to="." method="_on_test_win_toggle_toggled"]
+[connection signal="area_entered" from="MovementAxis/Catcher" to="." method="_on_catcher_area_entered"]
+[connection signal="area_exited" from="MovementAxis/Catcher" to="." method="_on_catcher_area_exited"]
 [connection signal="timeout" from="FishTrashingTimer" to="." method="_on_fish_trashing_timer_timeout"]

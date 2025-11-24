@@ -6,22 +6,24 @@ signal mini_game_ended(did_player_win : bool) # emitted once game resolves
 @export var progress_size = Vector2(0,234)
 
 
-@export var starting_progress = 25.0
-@export var max_progress = 100.0
+@export var starting_progress = 50.0
+@export var max_progress = 200.0
 
-@export var gain_speed = 13.0
-@export var loss_speed = 6.0
+@export var gain_speed = 21.0
+@export var loss_speed = 8.0
 
 @export var top_border : Node2D
 @export var bot_border : Node2D
 
 @export var fish : Node2D
-@export var fish_speed = 45
+@export var fish_speed = 190
 var fish_direction = -1
 
 
 @export var catcher : Node2D
 @export var catcher_speed = 20
+@export var catcher_inertia_loss = 8
+@export var catcher_inertia_gain = 20
 var catcher_inertia = 0
 
 
@@ -77,9 +79,9 @@ func move_fish(delta : float) -> void:
 
 func move_catcher(delta : float) -> void:
 	if Input.is_action_pressed("ui_accept"):
-		catcher_inertia -= delta * 15.0
+		catcher_inertia -= delta * catcher_inertia_gain
 	else:
-		catcher_inertia += delta * 2.0
+		catcher_inertia += delta * catcher_inertia_loss
 	catcher.position.y += delta * catcher_speed * catcher_inertia
 	if catcher.position.y < bot_border.position.y :
 		catcher_inertia *= -1
@@ -91,25 +93,38 @@ func move_catcher(delta : float) -> void:
 
 func win_game() -> void:
 	mini_game_ended.emit(true)
+	set_process(false)
 	pass
 
 func lose_game() -> void:
 	mini_game_ended.emit(false)
+	set_process(false)
 	pass
 
 
 func _on_test_win_toggle_toggled(toggled_on: bool) -> void:
 	is_winning = toggled_on
-	pass # Replace with function body.
+	pass
 
 
-func _on_fish_trashing_timer_timeout() -> void:
+func _on_fish_trashing_timer_timeout() -> void: # a timer that makes the fish movement hard to predict
 	if randf()>0.5: # flip a coin
 		fish_direction *= -1 # if heads - flip fish_direction 
 		
 	if randf()>0.5: # flip another coin
-		fish_speed *= 1.4 # if heads - speed up fish
+		fish_speed *= 1.1 # if heads - speed up fish
 	else:
-		fish_speed *= 0.8# if tails - slow it down
+		fish_speed *= 0.75 # if tails - slow it down
 	
-	pass # Replace with function body.
+	pass
+
+
+
+func _on_catcher_area_entered(area: Area2D) -> void:
+	is_winning = true
+	pass
+
+
+func _on_catcher_area_exited(area: Area2D) -> void:
+	is_winning = false
+	pass
